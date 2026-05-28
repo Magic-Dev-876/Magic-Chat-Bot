@@ -13,6 +13,8 @@ module.exports = {
             return interaction.reply('You do not have permission to use this command!');
         }
 
+        await interaction.reply('Starting global deployment of commands...');
+
         const commands = []
         const foldersPath = path.join(__dirname, '..');
         const commandFolders = fs.readdirSync(foldersPath);
@@ -20,7 +22,6 @@ module.exports = {
         for (const folder of commandFolders) {
             const commandsPath = path.join(foldersPath, folder);
             const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-            await interaction.reply('Loading commands. This may take a moment.');
             for (const file of commandFiles) {
                 const filePath = path.join(commandsPath, file);
                 const command = require(filePath);
@@ -32,10 +33,10 @@ module.exports = {
                 }
             }
             const rest = new REST().setToken(process.env.DISCORD_TOKEN);
-            await interaction.editReply('Deploying commands globally. This may take up to an hour to reflect on all servers.');
 
             try {
                 console.log(`Started refreshing ${commands.length} application (/) commands.`);
+                await interaction.editReply(`Started refreshing ${commands.length} application (/) commands globally!`);
 
                 const data = await rest.put(
                     Routes.applicationCommands(interaction.client.application.id),
